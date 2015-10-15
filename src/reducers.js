@@ -163,7 +163,7 @@ function validatePuzzle(puzzleState) {
   let allValidators = [...puzzleState.validations.rows, ...puzzleState.validations.leftDiagonals, ...puzzleState.validations.rightDiagonals];
   
   puzzleState.complete = allValidators.reduce((acc, status) => {
-    return acc !== ValidationStates.INVALID ? acc : status;
+    return acc === ValidationStates.INVALID ? acc : status;
   }, ValidationStates.VALID);
   
   return puzzleState;
