@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, CHANGE_NUMBER, VisibilityFilters } from './actions';
+import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, CHANGE_NUMBER, VisibilityFilters, ValidationStates } from './actions';
 const { SHOW_ALL } = VisibilityFilters;
 
 function visibilityFilter(state = SHOW_ALL, action) {
@@ -39,7 +39,7 @@ function puzzleStateGenerator(size) {
   let result = {
     size,
     numbers: [],
-    complete: false,
+    complete: ValidationStates.EMPTY,
     validations: {
       rows: [],
       leftDiagonals: [],
@@ -61,9 +61,9 @@ function puzzleStateGenerator(size) {
     
     result.numbers.push(row);
     
-    result.validations.rows.push(false);
-    result.validations.leftDiagonals.push(false);
-    result.validations.rightDiagonals.push(false);
+    result.validations.rows.push(ValidationStates.EMPTY);
+    result.validations.leftDiagonals.push(ValidationStates.EMPTY);
+    result.validations.rightDiagonals.push(ValidationStates.EMPTY);
   }
   
   result.total = 2*total;
@@ -73,38 +73,98 @@ function puzzleStateGenerator(size) {
 
 function validatePuzzle(puzzleState) {
   puzzleState.validations.rows = puzzleState.validations.rows.map(function(rowValidation, i){
-    let rowTotal = puzzleState.numbers[i].reduce((n, sum) => sum+n);
-    return rowTotal === puzzleState.total;
+    let rowTotal = 0;
+    let result;
+    
+    for(let j = 0; j < puzzleState.numbers[i].length; j++){
+      let thisNode = puzzleState.numbers[i][j];
+      if(thisNode > 0){
+        rowTotal += thisNode;
+      } else {
+        result = ValidationStates.EMPTY;
+        break;
+      }
+    }
+    
+    if(result !== ValidationStates.EMPTY) {
+      result = rowTotal === puzzleState.total ? ValidationStates.VALID : ValidationStates.INVALID;
+    }
+    
+    return result;
   });
   
   puzzleState.validations.leftDiagonals = puzzleState.validations.leftDiagonals.map(function(leftValidation, i){
     let leftTotal = 0;
+    let result;
+    
     for(let j = 0; j < puzzleState.numbers.length; j++){
+      let thisNode;
       if(j < puzzleState.size && i < puzzleState.numbers[j].length){
-        leftTotal += puzzleState.numbers[j][i];
+        thisNode = puzzleState.numbers[j][i];
+        if(thisNode > 0){
+          leftTotal += thisNode;
+        } else {
+          result = ValidationStates.EMPTY;
+          break;
+        }
       }
       
       if(j >= puzzleState.size && i - (j - puzzleState.size) - 1 >= 0){
-        leftTotal += puzzleState.numbers[j][i - (j - puzzleState.size) - 1];
+        thisNode = puzzleState.numbers[j][i - (j - puzzleState.size) - 1];
+        if(thisNode > 0){
+          leftTotal += thisNode;
+        } else {
+          result = ValidationStates.EMPTY;
+          break;
+        }
       }
     }
-    return leftTotal === puzzleState.total;
+    
+    if(result !== ValidationStates.EMPTY) {
+      result = leftTotal === puzzleState.total ? ValidationStates.VALID : ValidationStates.INVALID;
+    }
+    
+    return result;
   });
   
   puzzleState.validations.rightDiagonals = puzzleState.validations.rightDiagonals.map(function(leftValidation, i){
     let rightTotal = 0;
+    let result;
     for(let j = 0; j < puzzleState.numbers.length; j++){
+      let thisNode;
       if(j < puzzleState.size && puzzleState.numbers[j].length - (i+1) >= 0){
-        rightTotal += puzzleState.numbers[j][puzzleState.numbers[j].length - (i+1)];
+        thisNode = puzzleState.numbers[j][puzzleState.numbers[j].length - (i+1)];
+        if(thisNode > 0){
+          rightTotal += thisNode;
+        } else {
+          result = ValidationStates.EMPTY;
+          break;
+        }
       }
       
       if(j >= puzzleState.size && (2*puzzleState.size-2) - i < puzzleState.numbers[j].length){
-        rightTotal += puzzleState.numbers[j][(2*puzzleState.size-2) - i];
+        thisNode = puzzleState.numbers[j][(2*puzzleState.size-2) - i];
+        if(thisNode > 0){
+          rightTotal += thisNode;
+        } else {
+          result = ValidationStates.EMPTY;
+          break;
+        }
       }
     }
-    console.log(rightTotal);
-    return rightTotal === puzzleState.total;
+    
+    if(result !== ValidationStates.EMPTY) {
+      result = rightTotal === puzzleState.total ? ValidationStates.VALID : ValidationStates.INVALID;
+    }
+    
+    return result;
   });
+  
+  let allValidators = [...puzzleState.validations.rows, ...puzzleState.validations.leftDiagonals, ...puzzleState.validations.rightDiagonals];
+  
+  puzzleState.complete = allValidators.reduce((acc, status) => {
+    return acc !== ValidationStates.INVALID ? acc : status;
+  }, ValidationStates.VALID);
   
   return puzzleState;
 }

@@ -1,16 +1,55 @@
-import {changeNumber} from './actions';
+import {changeNumber, ValidationStates} from './actions';
 
-function AI(store){
-  console.log('BOOYAH', store);
+function AI(store) {
+  let {puzzle} = store.getState();
+//  console.log('BOOYAH', store, puzzle);
   
-  setTimeout(() => store.dispatch(changeNumber(0,2,1)), 1000);
-  setTimeout(() => store.dispatch(changeNumber(1,3,20)), 2000);
-  setTimeout(() => store.dispatch(changeNumber(2,4,17)), 3000);
+  let unTried = [];
+  for(let i = 0; i < puzzle.total / 2; i++){
+    unTried.push(i+1);
+  }
+  let tried = [];
   
-  setTimeout(() => store.dispatch(changeNumber(0,1,1)), 4000);
-  setTimeout(() => store.dispatch(changeNumber(1,2,20)), 5000);
-  setTimeout(() => store.dispatch(changeNumber(2,3,16)), 6000);
-  setTimeout(() => store.dispatch(changeNumber(3,3,1)), 7000);
+  let trying = unTried.shift();
+  pushToGrid(trying);
+  tried.push(trying);
+  
+  store.subscribe(() => {
+    puzzle = store.getState().puzzle;
+    console.log('HEYO', puzzle);
+    
+    if(puzzle.complete === ValidationStates.EMPTY){
+      
+    }
+  });
+  
+
+  function pushToGrid(newNode) {
+    let done = false;
+    for (let i = 0; !done && i < puzzle.numbers.length; i++) {
+      for (let j = 0; j < puzzle.numbers[i].length; j++) {
+        if (puzzle.numbers[i][j] === 0) {
+          store.dispatch(changeNumber(i, j, newNode));
+          done = true;
+          break;
+        }
+      }
+    }
+  }
+
+  function popFromGrid() {
+    let done = false;
+    for (let i = 0; !done && i < puzzle.numbers.length; i++) {
+      for (let j = 0; j < puzzle.numbers[i].length; j++) {
+        if (puzzle.numbers[i][j] !== 0) {
+          store.dispatch(changeNumber(i, j, 0));
+          done = true;
+          break;
+        }
+      }
+    }
+  }
+  
 }
 
 export default AI;

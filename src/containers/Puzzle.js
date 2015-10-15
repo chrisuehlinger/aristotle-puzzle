@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { changeNumber } from '../actions';
+import { changeNumber, ValidationStates } from '../actions';
 
 let nodeWidth = 60;
 let styles = {
@@ -44,16 +44,36 @@ let styles = {
 
 styles.rowValidationWrapper = JSON.parse(JSON.stringify(styles.validationWrapper));
 
-styles.leftValidationWrapper = JSON.parse(JSON.stringify(styles.validationWrapper));
-styles.leftValidationWrapper.transform = 'rotate(-60deg)';
+styles.leftDiagonalValidationWrapper = JSON.parse(JSON.stringify(styles.validationWrapper));
+styles.leftDiagonalValidationWrapper.transform = 'rotate(-60deg)';
 
-styles.rightValidationWrapper = JSON.parse(JSON.stringify(styles.validationWrapper));
-styles.rightValidationWrapper.transform = 'rotate(60deg)';
+styles.rightDiagonalValidationWrapper = JSON.parse(JSON.stringify(styles.validationWrapper));
+styles.rightDiagonalValidationWrapper.transform = 'rotate(60deg)';
+
+let validationColors = {
+  VALID: 'green',
+  INVALID: 'red',
+  EMPTY: 'rgba(200, 200, 200, 0.75)'
+}
+
+let Validation = (props) => {
+  let {puzzleState, direction} = props;
+  
+  return (
+    <div style={styles[direction + 'ValidationWrapper']}>
+      { puzzleState.validations[direction + 's'].map((validation, i) => {
+          let style = JSON.parse(JSON.stringify(styles.validation));
+          style.width = (puzzleState.numbers[i].length * nodeWidth - (nodeWidth-3)) + 'px';
+          style.backgroundColor = validationColors[validation];
+          return (<div style={style} key={direction + 'Validation' + i}></div>);
+        })}
+    </div>
+  );
+};
 
 let Puzzle = (props) => {
   let { dispatch, puzzleState } = props;
   let { numbers } = puzzleState;
-  console.log('Rendering', numbers);
   return (
     <div style={styles.puzzle}>
       <div>
@@ -71,30 +91,9 @@ let Puzzle = (props) => {
             );
           }) }
       </div>
-      <div style={styles.rowValidationWrapper}>
-        { puzzleState.validations.rows.map((validation, i) => {
-            let style = JSON.parse(JSON.stringify(styles.validation));
-            style.width = (puzzleState.numbers[i].length * nodeWidth - (nodeWidth-3)) + 'px';
-            style.backgroundColor = validation ? 'green' : 'red';
-            return (<div style={style} key={'rowValidation' + i}></div>);
-          })}
-      </div>
-      <div style={styles.leftValidationWrapper}>
-        { puzzleState.validations.leftDiagonals.map((validation, i) => {
-            let style = JSON.parse(JSON.stringify(styles.validation));
-            style.width = (puzzleState.numbers[i].length * nodeWidth - (nodeWidth-3)) + 'px';
-            style.backgroundColor = validation ? 'green' : 'red';
-            return (<div style={style} key={'leftValidation' + i}></div>);
-          })}
-      </div>
-      <div style={styles.rightValidationWrapper}>
-        { puzzleState.validations.rightDiagonals.map((validation, i) => {
-            let style = JSON.parse(JSON.stringify(styles.validation));
-            style.width = (puzzleState.numbers[i].length * nodeWidth - (nodeWidth-3)) + 'px';
-            style.backgroundColor = validation ? 'green' : 'red';
-            return (<div style={style} key={'rightValidation' + i}></div>);
-          })}
-      </div>
+      <Validation puzzleState={puzzleState} direction="row" />
+      <Validation puzzleState={puzzleState} direction="leftDiagonal" />
+      <Validation puzzleState={puzzleState} direction="rightDiagonal" />
     </div>
   );
 };

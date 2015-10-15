@@ -29,6 +29,9 @@ class App extends Component {
               dispatch(setVisibilityFilter(nextFilter))
             } />
         </div>
+        <div >
+          { puzzleState.complete }
+        </div>
         <Puzzle puzzleState={puzzleState} dispatch={dispatch}/>
       </div>
     );
