@@ -64,11 +64,11 @@ function AI(store) {
     }
 
     console.log('POP', result);
-    if(window.aiDelay !== -1) {
-      setTimeout(() => store.dispatch(changeNumber(resultI, resultJ, 0)), window.aiDelay);
-    } else {
+//    if(window.aiDelay !== -1) {
+//      setTimeout(() => store.dispatch(changeNumber(resultI, resultJ, 0)), window.aiDelay);
+//    } else {
       store.dispatch(changeNumber(resultI, resultJ, 0));
-    }
+//    }
     return result;
   }
 
@@ -80,10 +80,9 @@ function AI(store) {
     } else if (puzzle.complete === ValidationStates.EMPTY) {
       if(unTried[unTried.length-1].length > 0){
         let trying = unTried[unTried.length-1].pop();
-        pushToGrid(trying);
-
         unTried.push([...tried[tried.length-1], ...unTried[unTried.length-1]]);
         tried.push([]);
+        pushToGrid(trying);
       } else {
         unTried.pop();
         tried.pop();
