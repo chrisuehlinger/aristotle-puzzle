@@ -1,6 +1,6 @@
 import {changeNumber, ValidationStates} from './actions';
 
-let delay = 100;
+let delay = 500;
 
 function AI(store) {
   let {puzzle} = store.getState();
