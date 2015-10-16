@@ -173,7 +173,7 @@ function validatePuzzle(puzzleState) {
 function puzzle(state = puzzleStateGenerator(3), action) {
   switch (action.type) {
   case CHANGE_NUMBER:
-    console.log(state, action);
+//    console.log(state, action);
     let newState = JSON.parse(JSON.stringify(state));
     newState.numbers[action.row][action.index] = action.number;
     newState = validatePuzzle(newState);
