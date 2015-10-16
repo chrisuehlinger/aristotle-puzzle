@@ -10,11 +10,15 @@ let styles = {
 };
 
 let Row = (props) => {
-  let {row, index} = props;
+  let {row, index, dispatch} = props;
   return (
     <div style={ styles.row } >
       { row.map((number, i) => {
-          return (<Node rowIndex={index} nodeIndex={i} key={ 'node' + i } number={number} />);
+          return (<Node rowIndex={index} 
+                  nodeIndex={i} 
+                  key={ 'node' + i } 
+                  number={number}
+                  dispatch={dispatch} />);
        }) }
     </div>
   );

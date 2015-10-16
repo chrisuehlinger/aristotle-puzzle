@@ -1,6 +1,6 @@
 import {changeNumber, ValidationStates} from './actions';
 
-let delay = 500;
+window.aiDelay = 0;
 
 function AI(store) {
   let {puzzle} = store.getState();
@@ -8,10 +8,12 @@ function AI(store) {
 
   store.subscribe(() => {
     puzzle = store.getState().puzzle;
-    console.log('HEYO', unTried.length-1, unTried[unTried.length-1]);
+    console.log('HEYO', unTried.length-1, unTried[unTried.length-1], tried[tried.length-1]);
     decide();
   });
   
+  
+  let startTime = +new Date();
   init();
   decide();
   
@@ -20,7 +22,7 @@ function AI(store) {
     tried = [];
     unTried.push([]);
     tried.push([]);
-    for (let j = puzzle.total / 2; j > 0 ; j--) {
+    for (let j = 1; j <= puzzle.total / 2 ; j++) {
       unTried[0].push(j);
     }
   }
@@ -32,7 +34,11 @@ function AI(store) {
       for (let j = 0; j < puzzle.numbers[i].length; j++) {
         if (puzzle.numbers[i][j] === 0) {
           console.log('PUSH', newNode);
-          setTimeout(() => store.dispatch(changeNumber(i, j, newNode)), delay);
+          if(window.aiDelay !== -1) {
+            setTimeout(() => store.dispatch(changeNumber(i, j, newNode)), window.aiDelay);
+          } else {
+            store.dispatch(changeNumber(i, j, newNode));
+          }
           done = true;
           break;
         }
@@ -58,12 +64,20 @@ function AI(store) {
     }
 
     console.log('POP', result);
-    setTimeout(() => store.dispatch(changeNumber(resultI, resultJ, 0)), delay);
+    if(window.aiDelay !== -1) {
+      setTimeout(() => store.dispatch(changeNumber(resultI, resultJ, 0)), window.aiDelay);
+    } else {
+      store.dispatch(changeNumber(resultI, resultJ, 0));
+    }
     return result;
   }
 
   function decide(){
-    if (puzzle.complete === ValidationStates.EMPTY) {
+    if(puzzle.complete === ValidationStates.VALID || unTried[0].length === 0){
+      let endTime = +new Date();
+      let totalTime = (endTime - startTime) / 1000;
+      console.log('Time: ' + totalTime);
+    } else if (puzzle.complete === ValidationStates.EMPTY) {
       if(unTried[unTried.length-1].length > 0){
         let trying = unTried[unTried.length-1].pop();
         pushToGrid(trying);
@@ -71,9 +85,9 @@ function AI(store) {
         unTried.push([...tried[tried.length-1], ...unTried[unTried.length-1]]);
         tried.push([]);
       } else {
-        tried[tried.length-1].push(popFromGrid());
         unTried.pop();
         tried.pop();
+        tried[tried.length-1].push(popFromGrid());
       }
     } else if (puzzle.complete === ValidationStates.INVALID) {
       unTried.pop();

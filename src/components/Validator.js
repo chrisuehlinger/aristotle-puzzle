@@ -16,7 +16,7 @@ let styles = {
     pointerEvents: 'none'
   },
   validation: {
-    margin: '20px',
+    margin: '27px',
     flex: 1,
     boxSizing: 'border-box',
     opacity: '0.25',
@@ -45,7 +45,7 @@ let Validator = (props) => {
     <div style={styles[direction + 'ValidationWrapper']}>
       { puzzleState.validations[direction + 's'].map((validation, i) => {
           let style = JSON.parse(JSON.stringify(styles.validation));
-          style.width = (puzzleState.numbers[i].length * 60 - (60-3)) + 'px';
+          style.width = (puzzleState.numbers[i].length * 80 - (80-3)) + 'px';
           style.backgroundColor = validationColors[validation];
           return (<div style={style} key={direction + 'Validation' + i}></div>);
         })}

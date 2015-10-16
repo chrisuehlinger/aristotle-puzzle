@@ -4,17 +4,10 @@ import Validator from '../components/Validator';
 import Row from '../components/Row';
 
 let styles = {
-  input: {
-    maxWidth: '60px',
-    height: '50px',
-    fontSize: '36px',
+  status: {
     textAlign: 'center',
-    boxSizing: 'border-box',
-    margin: '-1px'
-  },
-  row: {
-    display: 'flex',
-    justifyContent: 'center'
+    marginTop: '20px',
+    fontFamily: 'Helvetica, sans-serif'
   },
   puzzle: {
     position: 'relative',
@@ -23,17 +16,29 @@ let styles = {
   }
 };
 
+let startTime = +new Date();
+
 let Puzzle = (props) => {
   let { dispatch, puzzleState } = props;
   let { numbers } = puzzleState;
+  let now = +new Date();
+  let elapsedTime = Math.round((now - startTime) / 10) / 100;
   return (
-    <div style={styles.puzzle}>
-      <div>
-        { numbers.map((row, i) => <Row row={row} index={ i } key={ 'row ' + i } />) }
+    <div>
+      <div style={styles.puzzle}>
+        <div>
+          { numbers.map((row, i) => <Row row={row} index={ i } key={ 'row ' + i } dispatch={dispatch} />) }
+        </div>
+        <Validator puzzleState={puzzleState} direction="row" />
+        <Validator puzzleState={puzzleState} direction="leftDiagonal" />
+        <Validator puzzleState={puzzleState} direction="rightDiagonal" />
       </div>
-      <Validator puzzleState={puzzleState} direction="row" />
-      <Validator puzzleState={puzzleState} direction="leftDiagonal" />
-      <Validator puzzleState={puzzleState} direction="rightDiagonal" />
+      <div style={ styles.status } >
+        { puzzleState.complete }
+      </div>
+      <div>
+        Elapsed Time: { elapsedTime }
+      </div>
     </div>
   );
 };

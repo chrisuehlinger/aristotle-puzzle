@@ -6,7 +6,6 @@ import TodoList from '../components/TodoList';
 import Footer from '../components/Footer';
 
 import Puzzle from './Puzzle';
-
 class App extends Component {
   render() {
     // Injected by connect() call:
@@ -28,9 +27,6 @@ class App extends Component {
             onFilterChange={nextFilter =>
               dispatch(setVisibilityFilter(nextFilter))
             } />
-        </div>
-        <div >
-          { puzzleState.complete }
         </div>
         <Puzzle puzzleState={puzzleState} dispatch={dispatch}/>
       </div>
