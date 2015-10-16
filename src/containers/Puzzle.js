@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { changeNumber, ValidationStates } from '../actions';
-import Validator from '../components/Validator'
+import Validator from '../components/Validator';
+import Row from '../components/Row';
 
-let nodeWidth = 60;
 let styles = {
   input: {
-    maxWidth: nodeWidth + 'px',
+    maxWidth: '60px',
     height: '50px',
     fontSize: '36px',
     textAlign: 'center',
@@ -29,19 +29,7 @@ let Puzzle = (props) => {
   return (
     <div style={styles.puzzle}>
       <div>
-        { numbers.map((row, i) => {
-            return (
-              <div style={ styles.row } key={ 'row ' + i }>
-               { row.map((number, j) => {
-                   return (<input type="number" 
-                                  style={ styles.input }
-                                  key={ 'row' + i + 'index' + j }
-                                  value={number}  
-                                  onChange={ (event) => dispatch(changeNumber(i, j, +event.target.value)) }/>);
-                 }) }
-              </div>
-            );
-          }) }
+        { numbers.map((row, i) => <Row row={row} index={ i } key={ 'row ' + i } />) }
       </div>
       <Validator puzzleState={puzzleState} direction="row" />
       <Validator puzzleState={puzzleState} direction="leftDiagonal" />
