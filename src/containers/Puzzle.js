@@ -6,13 +6,12 @@ import Row from '../components/Row';
 let styles = {
   status: {
     textAlign: 'center',
-    marginTop: '20px',
     fontFamily: 'Helvetica, sans-serif'
   },
   puzzle: {
     position: 'relative',
     display: 'table',
-    margin: '0 auto'
+    margin: '20px auto'
   }
 };
 

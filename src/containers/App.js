@@ -10,27 +10,28 @@ class App extends Component {
   render() {
     // Injected by connect() call:
     const { dispatch, visibleTodos, visibilityFilter, puzzleState } = this.props;
-    return (
-      <div>
-        <div>
-          <AddTodo
-            onAddClick={text =>
-              dispatch(addTodo(text))
-            } />
-          <TodoList
-            todos={visibleTodos}
-            onTodoClick={index =>
-              dispatch(completeTodo(index))
-            } />
-          <Footer
-            filter={visibilityFilter}
-            onFilterChange={nextFilter =>
-              dispatch(setVisibilityFilter(nextFilter))
-            } />
-        </div>
-        <Puzzle puzzleState={puzzleState} dispatch={dispatch}/>
-      </div>
-    );
+    return <Puzzle puzzleState={puzzleState} dispatch={dispatch}/>;
+//    return (
+//      <div>
+//        <div>
+//          <AddTodo
+//            onAddClick={text =>
+//              dispatch(addTodo(text))
+//            } />
+//          <TodoList
+//            todos={visibleTodos}
+//            onTodoClick={index =>
+//              dispatch(completeTodo(index))
+//            } />
+//          <Footer
+//            filter={visibilityFilter}
+//            onFilterChange={nextFilter =>
+//              dispatch(setVisibilityFilter(nextFilter))
+//            } />
+//        </div>
+//        <Puzzle puzzleState={puzzleState} dispatch={dispatch}/>
+//      </div>
+//    );
   }
 }
 
