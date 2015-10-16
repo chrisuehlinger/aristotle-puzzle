@@ -1,6 +1,6 @@
 import {changeNumber, ValidationStates} from './actions';
 
-let delay = 500;
+let delay = 100;
 
 function AI(store) {
   let {puzzle} = store.getState();
@@ -8,7 +8,7 @@ function AI(store) {
 
   store.subscribe(() => {
     puzzle = store.getState().puzzle;
-    console.log('HEYO', unTried, tried);
+    console.log('HEYO', unTried.length-1, unTried[unTried.length-1]);
     decide();
   });
   
@@ -18,9 +18,10 @@ function AI(store) {
   function init(){
     unTried = [];
     tried = [];
-    
-    for (let i = puzzle.total / 2; i > 0 ; i--) {
-      unTried.push(i);
+    unTried.push([]);
+    tried.push([]);
+    for (let j = puzzle.total / 2; j > 0 ; j--) {
+      unTried[0].push(j);
     }
   }
 
@@ -63,16 +64,21 @@ function AI(store) {
 
   function decide(){
     if (puzzle.complete === ValidationStates.EMPTY) {
-      if (unTried.length > 0) {
-        unTried = [...tried, ...unTried];
-        tried = [];
-        let trying = unTried.pop();
+      if(unTried[unTried.length-1].length > 0){
+        let trying = unTried[unTried.length-1].pop();
         pushToGrid(trying);
+
+        unTried.push([...tried[tried.length-1], ...unTried[unTried.length-1]]);
+        tried.push([]);
       } else {
-        tried.push(popFromGrid());
+        tried[tried.length-1].push(popFromGrid());
+        unTried.pop();
+        tried.pop();
       }
     } else if (puzzle.complete === ValidationStates.INVALID) {
-      tried.push(popFromGrid());
+      unTried.pop();
+      tried.pop();
+      tried[tried.length-1].push(popFromGrid());
     }
   }
 }
