@@ -17,7 +17,7 @@ let styles = {
     fontSize: '36px',
     textAlign: 'center',
     boxSizing: 'border-box',
-    border: 0,
+    border: '1px solid black',
     backgroundColor: 'white'
   },
   attachment: {
