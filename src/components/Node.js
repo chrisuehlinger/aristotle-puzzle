@@ -9,6 +9,7 @@ let styles = {
     margin: '4px 9px',
     borderLeft: '1px solid black',
     borderRight: '1px solid black',
+    webkitTtransform: 'scaleX(' + scaleX + ') scale(' + reScale + ')',
     transform: 'scaleX(' + scaleX + ') scale(' + reScale + ')'
   },
   input: {
@@ -26,6 +27,7 @@ let styles = {
     height: '42px',
     width: '42px',
     left: '50%',
+    webkitTransform: 'translateX(-50%)rotate(45deg)',
     transform: 'translateX(-50%)rotate(45deg)',
     zIndex: -1
   }
