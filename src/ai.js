@@ -1,14 +1,16 @@
 import {changeNumber, ValidationStates} from './actions';
+import _ from 'lodash';
 
 window.aiDelay = 0;
 
 function AI(store) {
   let {puzzle} = store.getState();
+  let stackCount = 0, stackMax = 10;
   let unTried, tried;
 
   store.subscribe(() => {
     puzzle = store.getState().puzzle;
-    console.log('HEYO', unTried.length-1, unTried[unTried.length-1], tried[tried.length-1]);
+    console.log('State must\'ve changed', unTried.length-1, unTried[unTried.length-1], tried[tried.length-1]);
     decide();
   });
   
@@ -20,13 +22,11 @@ function AI(store) {
   function init(){
     unTried = [];
     tried = [];
-    unTried.push([]);
+    unTried.push(_.range(1,puzzle.total / 2));
     tried.push([]);
-    for (let j = 1; j <= puzzle.total / 2 ; j++) {
-      unTried[0].push(j);
-    }
+//    unTried[0] = [15,14,9,13,8,6,11,10,4,5,1,18,12,2,7,17,16,19,3];
   }
-
+  
   function pushToGrid(newNode) {
     let done = false;
     
@@ -34,10 +34,12 @@ function AI(store) {
       for (let j = 0; j < puzzle.numbers[i].length; j++) {
         if (puzzle.numbers[i][j] === 0) {
           console.log('PUSH', newNode);
-          if(window.aiDelay !== -1) {
-            setTimeout(() => store.dispatch(changeNumber(i, j, newNode)), window.aiDelay);
-          } else {
+          if(window.aiDelay === -1 || stackCount < stackMax) {
+            stackCount++;
             store.dispatch(changeNumber(i, j, newNode));
+          } else {
+            stackCount = 0;
+            setTimeout(() => store.dispatch(changeNumber(i, j, newNode)), window.aiDelay);
           }
           done = true;
           break;
@@ -64,12 +66,14 @@ function AI(store) {
     }
 
     console.log('POP', result);
-//    if(window.aiDelay !== -1) {
-//      setTimeout(() => store.dispatch(changeNumber(resultI, resultJ, 0)), window.aiDelay);
-//    } else {
+    tried[tried.length-1].push(result);
+    if(window.aiDelay === -1 || stackCount < stackMax) {
+      stackCount++;
       store.dispatch(changeNumber(resultI, resultJ, 0));
-//    }
-    return result;
+    } else {
+      stackCount = 0;
+      setTimeout(() => store.dispatch(changeNumber(resultI, resultJ, 0)), window.aiDelay);
+    }
   }
 
   function decide(){
@@ -80,18 +84,18 @@ function AI(store) {
     } else if (puzzle.complete === ValidationStates.EMPTY) {
       if(unTried[unTried.length-1].length > 0){
         let trying = unTried[unTried.length-1].pop();
-        unTried.push([...tried[tried.length-1], ...unTried[unTried.length-1]]);
+        unTried.push([...tried[tried.length-1], ...unTried[unTried.length-1]].sort());
         tried.push([]);
         pushToGrid(trying);
       } else {
         unTried.pop();
         tried.pop();
-        tried[tried.length-1].push(popFromGrid());
+        popFromGrid();
       }
     } else if (puzzle.complete === ValidationStates.INVALID) {
       unTried.pop();
       tried.pop();
-      tried[tried.length-1].push(popFromGrid());
+      popFromGrid();
     }
   }
 }

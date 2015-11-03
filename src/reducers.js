@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import { ADD_TODO, COMPLETE_TODO, SET_VISIBILITY_FILTER, CHANGE_NUMBER, VisibilityFilters, ValidationStates } from './actions';
+import _ from 'lodash';
 const { SHOW_ALL } = VisibilityFilters;
+
 
 function visibilityFilter(state = SHOW_ALL, action) {
   switch (action.type) {
@@ -36,9 +38,13 @@ function todos(state = [], action) {
 
 function puzzleStateGenerator(size) {
   console.log('Generating Puzzle. Size: ' + size);
+  
+  let height = 2*size-1;
+  let total = 0;
   let result = {
     size,
     numbers: [],
+    changes:0,
     complete: ValidationStates.EMPTY,
     validations: {
       rows: [],
@@ -46,9 +52,6 @@ function puzzleStateGenerator(size) {
       rightDiagonals: []
     }
   };
-  
-  let height = 2*size-1;
-  let total = 0;
   
   for(let i = 0; i < height; i++) {
     let width = height - Math.abs(i - size + 1);
@@ -81,12 +84,12 @@ function validatePuzzle(puzzleState) {
       if(thisNode > 0){
         rowTotal += thisNode;
       } else {
-        result = ValidationStates.EMPTY;
+        result = (rowTotal < puzzleState.total) ? ValidationStates.EMPTY : ValidationStates.INVALID;
         break;
       }
     }
     
-    if(result !== ValidationStates.EMPTY) {
+    if(!result) {
       result = rowTotal === puzzleState.total ? ValidationStates.VALID : ValidationStates.INVALID;
     }
     
@@ -104,7 +107,7 @@ function validatePuzzle(puzzleState) {
         if(thisNode > 0){
           leftTotal += thisNode;
         } else {
-          result = ValidationStates.EMPTY;
+          result = (leftTotal < puzzleState.total) ? ValidationStates.EMPTY : ValidationStates.INVALID;
           break;
         }
       }
@@ -114,13 +117,13 @@ function validatePuzzle(puzzleState) {
         if(thisNode > 0){
           leftTotal += thisNode;
         } else {
-          result = ValidationStates.EMPTY;
+          result = (leftTotal < puzzleState.total) ? ValidationStates.EMPTY : ValidationStates.INVALID;
           break;
         }
       }
     }
     
-    if(result !== ValidationStates.EMPTY) {
+    if(!result) {
       result = leftTotal === puzzleState.total ? ValidationStates.VALID : ValidationStates.INVALID;
     }
     
@@ -137,7 +140,7 @@ function validatePuzzle(puzzleState) {
         if(thisNode > 0){
           rightTotal += thisNode;
         } else {
-          result = ValidationStates.EMPTY;
+          result = (rightTotal < puzzleState.total) ? ValidationStates.EMPTY : ValidationStates.INVALID;
           break;
         }
       }
@@ -147,13 +150,13 @@ function validatePuzzle(puzzleState) {
         if(thisNode > 0){
           rightTotal += thisNode;
         } else {
-          result = ValidationStates.EMPTY;
+          result = (rightTotal < puzzleState.total) ? ValidationStates.EMPTY : ValidationStates.INVALID;
           break;
         }
       }
     }
     
-    if(result !== ValidationStates.EMPTY) {
+    if(!result) {
       result = rightTotal === puzzleState.total ? ValidationStates.VALID : ValidationStates.INVALID;
     }
     
@@ -161,22 +164,37 @@ function validatePuzzle(puzzleState) {
   });
   
   let allValidators = [...puzzleState.validations.rows, ...puzzleState.validations.leftDiagonals, ...puzzleState.validations.rightDiagonals];
-  
+  console.log(allValidators);
   puzzleState.complete = allValidators.reduce((acc, status) => {
-    return acc === ValidationStates.INVALID ? acc : status;
+    if(acc === ValidationStates.INVALID || status === ValidationStates.INVALID){
+      return ValidationStates.INVALID;
+    } if(acc === ValidationStates.EMPTY || status === ValidationStates.EMPTY){
+      return ValidationStates.EMPTY
+    } else {
+      return ValidationStates.VALID;
+    }
   }, ValidationStates.VALID);
   
   return puzzleState;
 }
 
-
+let startTime = +new Date();
 function puzzle(state = puzzleStateGenerator(3), action) {
   switch (action.type) {
   case CHANGE_NUMBER:
 //    console.log(state, action);
     let newState = JSON.parse(JSON.stringify(state));
     newState.numbers[action.row][action.index] = action.number;
+    newState.changes++;
     newState = validatePuzzle(newState);
+      
+    let now = +new Date();
+    let elapsedTime = Math.round((now - startTime) / 10) / 100;
+    let rate = Math.round(100 * newState.changes / elapsedTime) /100;
+    console.log('Status: ' + newState.complete);
+    console.log('Moves: ' + newState.changes);
+    console.log('Time Elapsed: ' + elapsedTime);
+    console.log('Moves/sec: ' + rate);
     return newState;
   default:
     return state;
