@@ -22,7 +22,7 @@ function AI(store) {
   function init(){
     unTried = [];
     tried = [];
-    unTried.push(_.range(1,puzzle.total / 2));
+    unTried.push(_.shuffle(_.range(1,puzzle.total / 2)));
     tried.push([]);
 //    unTried[0] = [15,14,9,13,8,6,11,10,4,5,1,18,12,2,7,17,16,19,3];
   }
