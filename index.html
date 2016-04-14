@@ -2,7 +2,30 @@
 <html>
   <head>
     <title>Aristotle's Puzzle</title>
+    <link href='https://fonts.googleapis.com/css?family=Rock+Salt' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <style>
+      
+      article {
+        max-width: 600px;
+        margin: 0 auto;
+        font-family: 'Lato', sans-serif;
+      }
+      h1 {
+        font-family: 'Rock Salt', sans-serif;
+        text-align: center;
+        margin-bottom: 0;
+      }
+      h2.subtitle {
+        font-size: 16px;
+        text-align: center;
+        margin: 5px 0;
+      }
+      h3 {
+        font-size: 14px;
+        text-align: center;
+        margin: 0;
+      }
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
       -webkit-appearance: none; 
@@ -11,8 +34,39 @@
     </style>
   </head>
   <body>
-    <div id='root'>
-    </div>
+    <a href="https://github.com/chrisuehlinger/aristotle-puzzle">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png">
+    </a>
+    <article>
+      <h1>Aristotle's Puzzle</h1>
+      <h2 class="subtitle">A simple AI experiment using React and Redux</h2>
+      <h3>By <a href="http://www.chrisuehlinger.com">Chris Uehlinger</a></h3>
+      <p>When I got started at my first job, my mom bought me a desk toy called <a href="http://www.amazon.com/Aristotles-Number-Classic-Wooden-Puzzle/dp/B0085JRADS">"Aristotle's Puzzle"</a>. The rules of the game are fairly simple:</p>
+      <ul>
+        <li>You have 19 wooden hexagons, numbered 1-19</li>
+        <li>You must arrange them in the hexagonal tray, using all 19 numbers</li>
+        <li>All of the rows, left diagonals and right diagonals must add up to <strong>38</strong></li>
+      </ul>
+      <p>Here's a version you can play right now. Each hexagon is an HTML <code>&lt;input&gt;</code> element. If you fill in a row or diagonal, but the sum is not 38, it will be highlighted in red. If it does sum to 38, it will be heighlighted in green. Give it a try:</p>
+      <div id='user' style="text-align: center"></div>
+      
+      <p>I find this game interesting because of the different responses it gets from different people. Some people tinker with it for a little bit before giving up. Some people start thinking about the number theory ideas at work here, and how this puzzle could be solved with pencil and paper. I immediately started thinking about how to make an AI that could brute force the problem.</p>
+      
+      <p>But not just any AI. I wanted to build an AI I could watch. I wanted to build an HTML5 version of the game, and then have an AI play it, but using the same interface humans would use. A while back, I threw together a <a href="http://chrisuehlinger.com/2048">2048 AI</a> that essentially hooked itself into the game and "played" by issuing moves into the same functions that were called when players interacted with the game.</p>
+      
+      <p>Here's what I came up with:</p>
+      <div id='ai' style="text-align: center"></div>
+      
+      <h2>Postmortem</h2>
+      <p>I'd done some work with React before, and took this as an opportunity to brush up on some of the newest technologies in the React ecosystem. To that end, this project made use of pure-function React components, Radium-inspired CSS-in-JS styling, Redux for state management and Webpack/react-hot-loader for my build process.</p>
+      <p>React's new purely functional components are truly fantastic, they really boil down the essence of what a React component is meant to be, and I think they will make it much easier to teach about React in the future. The CSS-in-JS styles were interesting, and definitely had some big upsides, but I'm not entirely sold on the approach. Frameworks like Radium need to truly tackle media queries, pseudo selectors and pseudo-elements before I can start looking at this as a serious idea for production apps. React-hot-loader knocked my socks off. If you haven't tried it, try it. Pull down this repo, fire it up in the browser with the AI running, and make a couple changes to one of the smaller components. It's the kind of thing you need to see to believe.</p>
+      <p>But in the end, it was Redux that made this whole thing possible. Redux provided hooks so that my React components and AI could feed actions into the same shared piece of state. Interactions with the UI and decisions made by the AI would be processed through the same "channel". If things were acting weird, I could replay the AI's steps myself and see where things went wrong. Having worked with React+Flux before, Redux is an all-around improvement, taking an interesting architecture and making it streamlined and more flexible. Redux has me really excited for the future of the React ecosystem.</p>
+      <h2>Still reading?</h2>
+      <p>Click the button below to fire up 5 AIs at once. Redux stores are so powerful and flexible, the app and the AI can be decomposed and spun up in parallel:</p>
+    </article>
+      <div id='many' style="text-align: center">
+        <button onclick="parallelAIs()">Get Ready...</button>
+      </div>
     <script src="static/bundle.js"></script>
     <script type="text/javascript">
         var _gaq = _gaq || [];

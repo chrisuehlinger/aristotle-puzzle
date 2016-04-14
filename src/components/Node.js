@@ -9,7 +9,7 @@ let styles = {
     margin: '4px 9px',
     borderLeft: '1px solid black',
     borderRight: '1px solid black',
-    webkitTtransform: 'scaleX(' + scaleX + ') scale(' + reScale + ')',
+    webkitTransform: 'scaleX(' + scaleX + ') scale(' + reScale + ')',
     transform: 'scaleX(' + scaleX + ') scale(' + reScale + ')'
   },
   input: {
@@ -18,7 +18,7 @@ let styles = {
     fontSize: '36px',
     textAlign: 'center',
     boxSizing: 'border-box',
-    border: '1px solid black',
+    border: '1px solid transparent',
     backgroundColor: 'white'
   },
   attachment: {
